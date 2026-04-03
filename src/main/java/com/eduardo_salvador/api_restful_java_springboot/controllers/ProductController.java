@@ -1,5 +1,6 @@
 package com.eduardo_salvador.api_restful_java_springboot.controllers;
 import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductRecordDto;
+import com.eduardo_salvador.api_restful_java_springboot.exceptions.NoFindException;
 import com.eduardo_salvador.api_restful_java_springboot.models.ProductModel;
 import com.eduardo_salvador.api_restful_java_springboot.repositories.ProductRepository;
 import jakarta.validation.Valid;
@@ -30,19 +31,22 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<List<ProductModel>> getAllProducts() {
         List<ProductModel> productsList = productRepository.findAll();
-        if (!productsList.isEmpty()){
-            for (ProductModel product : productsList){
-                product.add(linkTo(methodOn(ProductController.class).getOneProduct(product.getIdProduct())).withSelfRel());
-            }
+        if (productsList.isEmpty()) {
+            throw new NoFindException();
+        }
+        for (ProductModel product : productsList) {
+            product.add(linkTo(methodOn(ProductController.class)
+                    .getOneProduct(product.getIdProduct()))
+                    .withSelfRel());
         }
         return ResponseEntity.status(HttpStatus.OK).body(productsList);
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<Object> getOneProduct(@PathVariable(value="id") UUID id) {
+    public ResponseEntity<ProductModel> getOneProduct(@PathVariable(value="id") UUID id) {
         Optional<ProductModel> product0 = productRepository.findById(id);
         if (product0.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+            throw new NoFindException("Product not found.");
         }
         product0.get().add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Products List"));
         return ResponseEntity.status(HttpStatus.OK).body(product0.get());
@@ -52,7 +56,7 @@ public class ProductController {
     public ResponseEntity<Object> updateProduct(@PathVariable(value="id") UUID id, @RequestBody @Valid ProductRecordDto productRecordDto) {
         Optional<ProductModel> product0 = productRepository.findById(id);
         if (product0.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+            throw new NoFindException("Product not found.");
         }
         var productModel = product0.get();
         BeanUtils.copyProperties(productRecordDto, productModel);
@@ -63,7 +67,7 @@ public class ProductController {
     public ResponseEntity<Object> deleteProduct(@PathVariable(value="id") UUID id) {
         Optional<ProductModel> product0 = productRepository.findById(id);
         if (product0.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
+            throw new NoFindException("Product not found.");
         }
         productRepository.delete(product0.get());
         return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully.");
