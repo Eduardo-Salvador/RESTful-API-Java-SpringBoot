@@ -1,9 +1,9 @@
 package com.eduardo_salvador.api_restful_java_springboot.services;
 import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductRecordDto;
 import com.eduardo_salvador.api_restful_java_springboot.exceptions.NoFindException;
+import com.eduardo_salvador.api_restful_java_springboot.mappers.ProductMapper;
 import com.eduardo_salvador.api_restful_java_springboot.models.ProductModel;
 import com.eduardo_salvador.api_restful_java_springboot.repositories.ProductRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,11 +16,12 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    ProductMapper modelMapper;
+
     @Override
     public ProductModel save(ProductRecordDto productRecordDto) {
-        var productModel = new ProductModel();
-        BeanUtils.copyProperties(productRecordDto, productModel);
-        return productRepository.save(productModel);
+        return productRepository.save(modelMapper.toModel(productRecordDto));
     }
 
     @Override
@@ -47,8 +48,8 @@ public class ProductServiceImpl implements ProductService {
         if (product0.isEmpty()) {
             throw new NoFindException("Product not found.");
         }
-        var productModel = product0.get();
-        BeanUtils.copyProperties(productRecordDto, productModel);
+        ProductModel productModel = product0.get();
+        modelMapper.updateModel(productRecordDto, productModel);
         return productRepository.save(productModel);
     }
 
