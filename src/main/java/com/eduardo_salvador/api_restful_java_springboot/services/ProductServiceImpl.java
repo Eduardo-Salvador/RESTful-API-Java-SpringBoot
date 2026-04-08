@@ -1,5 +1,6 @@
 package com.eduardo_salvador.api_restful_java_springboot.services;
 import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductRecordDto;
+import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductResponseDto;
 import com.eduardo_salvador.api_restful_java_springboot.exceptions.NoFindException;
 import com.eduardo_salvador.api_restful_java_springboot.mappers.ProductMapper;
 import com.eduardo_salvador.api_restful_java_springboot.models.ProductModel;
@@ -20,37 +21,42 @@ public class ProductServiceImpl implements ProductService {
     ProductMapper modelMapper;
 
     @Override
-    public ProductModel save(ProductRecordDto productRecordDto) {
-        return productRepository.save(modelMapper.toModel(productRecordDto));
+    public ProductResponseDto save(ProductRecordDto productRecordDto) {
+        ProductModel productModel = modelMapper.toModel(productRecordDto);
+        productRepository.save(productModel);
+        return modelMapper.toResponseDto(productModel);
     }
 
     @Override
-    public List<ProductModel> findAll() {
+    public List<ProductResponseDto> findAll() {
         List<ProductModel> productsList = productRepository.findAll();
         if (productsList.isEmpty()) {
             throw new NoFindException();
         }
-        return productsList;
+        return productsList.stream()
+                .map(modelMapper::toResponseDto)
+                .toList();
     }
 
     @Override
-    public ProductModel findById(UUID id) {
+    public ProductResponseDto findById(UUID id) {
         Optional<ProductModel> product0 = productRepository.findById(id);
         if (product0.isEmpty()) {
             throw new NoFindException("Product not found.");
         }
-        return product0.get();
+        return modelMapper.toResponseDto(product0.get());
     }
 
     @Override
-    public ProductModel update(UUID id, ProductRecordDto productRecordDto) {
+    public ProductResponseDto update(UUID id, ProductRecordDto productRecordDto) {
         Optional<ProductModel> product0 = productRepository.findById(id);
         if (product0.isEmpty()) {
             throw new NoFindException("Product not found.");
         }
         ProductModel productModel = product0.get();
         modelMapper.updateModel(productRecordDto, productModel);
-        return productRepository.save(productModel);
+        productRepository.save(productModel);
+        return modelMapper.toResponseDto(productModel);
     }
 
     @Override

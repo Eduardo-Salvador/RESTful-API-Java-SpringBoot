@@ -1,6 +1,6 @@
 package com.eduardo_salvador.api_restful_java_springboot.controllers;
 import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductRecordDto;
-import com.eduardo_salvador.api_restful_java_springboot.models.ProductModel;
+import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductResponseDto;
 import com.eduardo_salvador.api_restful_java_springboot.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping("/products")
-    public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto) {
+    public ResponseEntity<ProductResponseDto> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(productRecordDto));
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<ProductModel>> getAllProducts() {
-        List<ProductModel> productsList = productService.findAll();
-        for (ProductModel product : productsList) {
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+        List<ProductResponseDto> productsList = productService.findAll();
+        for (ProductResponseDto product : productsList) {
             product.add(linkTo(methodOn(ProductController.class)
                     .getOneProduct(product.getIdProduct()))
                     .withSelfRel());
@@ -35,14 +35,14 @@ public class ProductController {
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductModel> getOneProduct(@PathVariable(value="id") UUID id) {
-        ProductModel product0 = productService.findById(id);
+    public ResponseEntity<ProductResponseDto> getOneProduct(@PathVariable(value="id") UUID id) {
+        ProductResponseDto product0 = productService.findById(id);
         product0.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Products List"));
         return ResponseEntity.status(HttpStatus.OK).body(product0);
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<Object> updateProduct(@PathVariable(value="id") UUID id, @RequestBody @Valid ProductRecordDto productRecordDto) {
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable(value="id") UUID id, @RequestBody @Valid ProductRecordDto productRecordDto) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.update(id, productRecordDto));
     }
 
