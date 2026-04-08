@@ -6,8 +6,9 @@ import com.eduardo_salvador.api_restful_java_springboot.mappers.ProductMapper;
 import com.eduardo_salvador.api_restful_java_springboot.models.ProductModel;
 import com.eduardo_salvador.api_restful_java_springboot.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,14 +29,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponseDto> findAll() {
-        List<ProductModel> productsList = productRepository.findAll();
+    public Page<ProductResponseDto> findAll(Pageable pageable) {
+        Page<ProductModel> productsList = productRepository.findAll(pageable);
         if (productsList.isEmpty()) {
             throw new NoFindException();
         }
-        return productsList.stream()
-                .map(modelMapper::toResponseDto)
-                .toList();
+        return productsList.map(modelMapper::toResponseDto);
     }
 
     @Override

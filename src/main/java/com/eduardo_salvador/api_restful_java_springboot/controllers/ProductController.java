@@ -4,10 +4,12 @@ import com.eduardo_salvador.api_restful_java_springboot.dtos.ProductResponseDto;
 import com.eduardo_salvador.api_restful_java_springboot.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -24,8 +26,8 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        List<ProductResponseDto> productsList = productService.findAll();
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
+        Page<ProductResponseDto> productsList = productService.findAll(pageable);
         for (ProductResponseDto product : productsList) {
             product.add(linkTo(methodOn(ProductController.class)
                     .getOneProduct(product.getIdProduct()))
@@ -37,7 +39,7 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponseDto> getOneProduct(@PathVariable(value="id") UUID id) {
         ProductResponseDto product0 = productService.findById(id);
-        product0.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Products List"));
+        product0.add(linkTo(methodOn(ProductController.class).getAllProducts(null)).withRel("Products List"));
         return ResponseEntity.status(HttpStatus.OK).body(product0);
     }
 
