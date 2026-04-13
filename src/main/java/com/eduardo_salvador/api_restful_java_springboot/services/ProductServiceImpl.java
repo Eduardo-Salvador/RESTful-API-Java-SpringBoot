@@ -5,10 +5,14 @@ import com.eduardo_salvador.api_restful_java_springboot.exceptions.NoFindExcepti
 import com.eduardo_salvador.api_restful_java_springboot.mappers.ProductMapper;
 import com.eduardo_salvador.api_restful_java_springboot.models.ProductModel;
 import com.eduardo_salvador.api_restful_java_springboot.repositories.ProductRepository;
+import com.eduardo_salvador.api_restful_java_springboot.specifications.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,8 +33,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponseDto> findAll(Pageable pageable) {
-        Page<ProductModel> productsList = productRepository.findAll(pageable);
+    public Page<ProductResponseDto> findAll(String name, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        Specification<ProductModel> spec = Specification
+                .where(ProductSpecification.hasName(name)
+                        .and(ProductSpecification.hasMinPrice(minPrice))
+                        .and(ProductSpecification.hasMaxPrice(maxPrice))
+                );
+        Page<ProductModel> productsList = productRepository.findAll(spec, pageable);
         if (productsList.isEmpty()) {
             throw new NoFindException();
         }

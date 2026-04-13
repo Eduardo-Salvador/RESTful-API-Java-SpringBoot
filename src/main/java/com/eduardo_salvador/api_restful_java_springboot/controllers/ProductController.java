@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
 import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -26,8 +27,12 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
-        Page<ProductResponseDto> productsList = productService.findAll(pageable);
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @PageableDefault(size = 10, sort = "name") Pageable pageable) {
+        Page<ProductResponseDto> productsList = productService.findAll(name, minPrice, maxPrice, pageable);
         for (ProductResponseDto product : productsList) {
             product.add(linkTo(methodOn(ProductController.class)
                     .getOneProduct(product.getIdProduct()))
@@ -39,7 +44,7 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponseDto> getOneProduct(@PathVariable(value="id") UUID id) {
         ProductResponseDto product0 = productService.findById(id);
-        product0.add(linkTo(methodOn(ProductController.class).getAllProducts(null)).withRel("Products List"));
+        product0.add(linkTo(methodOn(ProductController.class).getAllProducts(null, null, null, null)).withRel("Products List"));
         return ResponseEntity.status(HttpStatus.OK).body(product0);
     }
 
