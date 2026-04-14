@@ -88,7 +88,7 @@ src/
 
 ### Prerequisites
 
-- [Java 21+](https://adoptium.net/)
+- [Java 21+](https://www.oracle.com/br/java/technologies/downloads/#java21)
 - [Maven 3.9+](https://maven.apache.org/)
 - [Docker + Docker Compose](https://www.docker.com/)
 
