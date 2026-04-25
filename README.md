@@ -1,15 +1,13 @@
 <div align="center">
 
-[![Generic badge](https://img.shields.io/badge/STATUS-FINISHED-<COLOR>.svg)](https://shields.io/) [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)]([https://GitHub.com/Naereen/ama](https://github.com/Eduardo-Salvador))
-
-
+[![Generic badge](https://img.shields.io/badge/STATUS-FINISHED-<COLOR>.svg)](https://shields.io/) [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://github.com/Eduardo-Salvador)
 
 # Products API: RESTful Java Spring Boot
 
-> RESTful API for product management, built with Java 21 and Spring Boot 4.
+> RESTful API for product management, built with Java 21 and Spring Boot 3.
 
 ![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.5-brightgreen?style=flat-square&logo=spring)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.5-brightgreen?style=flat-square&logo=spring)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?style=flat-square&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker)
 ![Maven](https://img.shields.io/badge/Maven-build-C71A36?style=flat-square&logo=apachemaven)
@@ -33,6 +31,7 @@ RESTful API developed for study purposes, focused on back-end development best p
 - Input validation with Bean Validation (`@NotBlank`, `@NotNull`)
 - Global exception handling with `@RestControllerAdvice`
 - Entity mapping with MapStruct
+- API documentation with Swagger UI and OpenAPI 3
 - Unit tests with JUnit 5 + Mockito
 - Integration tests with H2 in-memory database
 - Containerization with Docker + PostgreSQL
@@ -44,10 +43,11 @@ RESTful API developed for study purposes, focused on back-end development best p
 | Technology | Version | Purpose |
 |---|---|---|
 | Java | 21 | Main language |
-| Spring Boot | 4.0.5 | Base framework |
+| Spring Boot | 3.4.5 | Base framework |
 | Spring Data JPA | - | Persistence and Specifications |
-| Spring HATEOAS | 3.0.3 | Hypermedia in responses |
+| Spring HATEOAS | - | Hypermedia in responses |
 | Spring Validation | - | DTO validation |
+| SpringDoc OpenAPI | 2.8.8 | Swagger UI and API documentation |
 | PostgreSQL | - | Production database |
 | H2 Database | - | Test database |
 | MapStruct | 1.6.3 | Object mapping |
@@ -65,6 +65,7 @@ RESTful API developed for study purposes, focused on back-end development best p
 src/
 ├── main/
 │   ├── java/com/eduardo_salvador/api_restful_java_springboot/
+│   │   ├── config/            # OpenAPI and Swagger configuration
 │   │   ├── controllers/       # REST endpoints
 │   │   ├── dtos/              # Data Transfer Objects (record + response)
 │   │   ├── exceptions/        # Custom exceptions
@@ -125,6 +126,8 @@ spring.datasource.password=postgres123
 ```
 
 The API will be available at `http://localhost:8080`.
+
+The Swagger UI will be available at `http://localhost:8080/swagger-ui.html`.
 
 ---
 
